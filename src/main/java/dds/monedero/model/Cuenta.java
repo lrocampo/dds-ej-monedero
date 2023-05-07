@@ -12,7 +12,8 @@ import java.util.List;
 public class Cuenta {
 
   private double saldo = 0;
-  private List<Movimiento> movimientos = new ArrayList<>();
+  private List<Movimiento> depositos = new ArrayList<>();
+  private List<Movimiento> extracciones = new ArrayList<>();
 
   public Cuenta() {
     saldo = 0;
@@ -22,19 +23,15 @@ public class Cuenta {
     saldo = montoInicial;
   }
 
-  public void setMovimientos(List<Movimiento> movimientos) {
-    this.movimientos = movimientos;
-  }
-
   public void poner(double cuanto) {
     validarMontoIngresado(cuanto);
 
-    if (getMovimientos().stream().filter(movimiento -> movimiento.isDeposito()).count() >= 3) {
+    if (depositos.stream().filter(deposito -> deposito.esDeLaFecha(LocalDate.now())).count() >= 3) {
       throw new MaximaCantidadDepositosException("Ya excedio los " + 3 + " depositos diarios");
     }
 
     saldo = saldo + cuanto;
-    agregarMovimiento(LocalDate.now(), cuanto, true);
+    agregarDeposito(new Movimiento(LocalDate.now(), cuanto));
   }
 
   public void sacar(double cuanto) {
@@ -50,7 +47,7 @@ public class Cuenta {
     }
 
     saldo = saldo - cuanto;
-    agregarMovimiento(LocalDate.now(), cuanto, false);
+    agregarExtraccion(new Movimiento(LocalDate.now(), cuanto));
   }
 
   public void validarMontoIngresado(double monto) {
@@ -59,20 +56,11 @@ public class Cuenta {
     }
   }
 
-  public void agregarMovimiento(LocalDate fecha, double cuanto, boolean esDeposito) {
-    Movimiento movimiento = new Movimiento(fecha, cuanto, esDeposito);
-    movimientos.add(movimiento);
-  }
-
   public double getMontoExtraidoA(LocalDate fecha) {
-    return getMovimientos().stream()
-        .filter(movimiento -> !movimiento.isDeposito() && movimiento.esDeLaFecha(fecha))
+    return extracciones.stream()
+        .filter(movimiento -> movimiento.esDeLaFecha(fecha))
         .mapToDouble(Movimiento::getMonto)
         .sum();
-  }
-
-  public List<Movimiento> getMovimientos() {
-    return movimientos;
   }
 
   public double getSaldo() {
@@ -83,4 +71,11 @@ public class Cuenta {
     this.saldo = saldo;
   }
 
+  public void agregarDeposito(Movimiento deposito) {
+    depositos.add(deposito);
+  }
+
+  public void agregarExtraccion(Movimiento extraccion) {
+    extracciones.add(extraccion);
+  }
 }
