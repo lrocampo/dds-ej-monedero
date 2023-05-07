@@ -27,8 +27,40 @@ Tenés seis tareas:
     *  [Entrada de Blog (en inglés)](https://www.baeldung.com/junit-5-migration)
     *  [Entrada de Blog (en español)](https://www.paradigmadigital.com/dev/nos-espera-junit-5/)
 * Maven 3.3 o superior
- 
 
+## Solución
+### Code Smells:
+1. Codigo Duplicado:
+En `Cuenta` `poner` y `sacar`   
+```
+   if (cuanto <= 0) { 
+   throw new MontoNegativoException(cuanto + ": el monto a ingresar debe ser un valor positivo");
+   }
+```
+2. Message Chain
+En `Cuenta` `getMontoExtraidoA`
+```
+ movimiento.getFecha().equals(fecha)
+```
+3. Misplaced Method
+En `Movimiento` `agregateA`
+```
+  public void agregateA(Cuenta cuenta) {
+    cuenta.setSaldo(calcularValor(cuenta));
+    cuenta.agregarMovimiento(fecha, monto, esDeposito);
+  }
+```
+4. Type Test
+En `Movimiento` `calcularValor`
+```
+  public double calcularValor(Cuenta cuenta) {
+    if (esDeposito) { // type test
+      return cuenta.getSaldo() + getMonto();
+    } else {
+      return cuenta.getSaldo() - getMonto();
+    }
+  }
+```
   
 
 

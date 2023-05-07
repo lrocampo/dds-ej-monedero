@@ -34,7 +34,7 @@ public class Movimiento {
 
   public boolean esDeLaFecha(LocalDate fecha) {
     return this.fecha.equals(fecha);
-  }
+  } // code smell sin nombre: soy un boludo se llama
 
   public boolean isDeposito() {
     return esDeposito;
@@ -44,13 +44,13 @@ public class Movimiento {
     return !esDeposito;
   }
 
-  public void agregateA(Cuenta cuenta) {
+  public void agregateA(Cuenta cuenta) { // misplaced method
     cuenta.setSaldo(calcularValor(cuenta));
     cuenta.agregarMovimiento(fecha, monto, esDeposito);
   }
 
   public double calcularValor(Cuenta cuenta) {
-    if (esDeposito) {
+    if (esDeposito) { // type test
       return cuenta.getSaldo() + getMonto();
     } else {
       return cuenta.getSaldo() - getMonto();
